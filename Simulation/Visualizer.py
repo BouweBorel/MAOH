@@ -4,6 +4,7 @@ Test file for inspecting models
 """
 
 import os
+
 import pydot
 from pydrake.geometry import StartMeshcat
 from pydrake.multibody.parsing import Parser
@@ -16,14 +17,8 @@ from pydrake.systems.analysis import Simulator
 visualize = False  # True = only visualize, False = run full simulation
 meshcat = StartMeshcat()
 # Adjust the path to where the URDF is in your directory
-model_pathxx = os.path.join(
-    "..",'Robotics-II', "models", "descriptions", "robots", "humanoids", "pr2_description", "urdf", "pr2_simplified.urdf"
-)
-model_pathx=os.path.join(
-    "..",'Robotics-II', "models", "descriptions", "robots", "humanoids", "atlas", "atlas_minimal_contact.urdf"
-)
-model_pathx=os.path.join("..",'Robotics-II','tutorial_scripts','project_07_object_handover.sdf')
-model_path=os.path.join("..",'Robotics-II','tutorial_scripts','project_07_object_handover.sdf')
+model_path=os.path.join("..","SDF_file","project_07_object_handover.sdf")
+
 # ------------------ Functions ------------------
 def create_sim_scene(sim_time_step):
     """Creates a MultibodyPlant + SceneGraph diagram."""
@@ -44,14 +39,14 @@ def run_visualizer():
     visualizer.parser().AddModelsFromUrl("file://" + os.path.abspath(model_path))
     visualizer.Run()
 
-def run_simulation(sim_time_step=0.0005):
+def run_simulation(sim_time_step=0.01):
     """Run full simulation if visualize=False."""
     diagram = create_sim_scene(sim_time_step)
     simulator = Simulator(diagram)
     simulator.set_target_realtime_rate(1.0)
     simulator.Initialize()
     simulator.set_publish_every_time_step(True)
-    sim_time = 10.0  # seconds
+    sim_time = 8.0  # seconds
     simulator.AdvanceTo(sim_time)
 
 '''# Save diagram imageu
