@@ -55,6 +55,32 @@ def run_simulation(sim_time_step=0.01):
     graph.write_png("figures/block_diagram_01.png")
     print("Block diagram saved as figures/block_diagram_01.png")'''
 
+# ------------------ Helper: diagnostics for why ../models may be untracked ------------------
+def git_models_diagnostics():
+    sim_dir = os.path.dirname(__file__)
+    candidate = os.path.normpath(os.path.join(sim_dir, "..", "models"))
+    print("Diagnostics for models folder:")
+    print("  Simulation script dir:", sim_dir)
+    print("  Candidate models path:", candidate)
+    print("  Exists?:", os.path.exists(candidate))
+    if os.path.exists(candidate):
+        print("  Is directory?:", os.path.isdir(candidate))
+        try:
+            files = os.listdir(candidate)
+            print("  Contains (sample up to 10):", files[:10])
+        except Exception as e:
+            print("  Error listing files:", str(e))
+    print("")
+    print("If the directory exists but is untracked, run from repo root:")
+    print("  git add models")
+    print("Or from Simulation/ if it's ../models:")
+    print("  git add ../models")
+    print("If it's empty, create a .gitkeep and add it.")
+    print("To see if files are ignored:")
+    print("  git check-ignore -v <path_to_file>")
+    print("To force-add an ignored file:")
+    print("  git add -f <path_to_file>")
+
 # ------------------ Main ------------------
 if visualize:
     run_visualizer()
