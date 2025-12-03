@@ -4,8 +4,10 @@ Test file for inspecting models
 """
 
 import os
+import numpy as np
+import pydot # For saving block diagram images
 
-import pydot
+# Drake dependencies imports
 from pydrake.geometry import StartMeshcat
 from pydrake.multibody.parsing import Parser
 from pydrake.multibody.plant import AddMultibodyPlantSceneGraph
@@ -16,7 +18,7 @@ from pydrake.systems.analysis import Simulator
 # ------------------ Settings ------------------
 visualize = False  # True = only visualize, False = run full simulation
 meshcat = StartMeshcat()
-# Adjust the path to where the URDF is in your directory
+
 model_path=os.path.join("..","SDF_file","project_07_object_handover.sdf")
 
 # ------------------ Functions ------------------
@@ -46,40 +48,18 @@ def run_simulation(sim_time_step=0.01):
     simulator.set_target_realtime_rate(1.0)
     simulator.Initialize()
     simulator.set_publish_every_time_step(True)
-    sim_time = 8.0  # seconds
-    simulator.AdvanceTo(sim_time)
+    sim_time = 3.0  # seconds
 
-'''# Save diagram imageu
+    # To rerun the simulation in Meshcat if needed
+    meshcat.StartRecording()
+    simulator.AdvanceTo(sim_time)
+    meshcat.PublishRecording()
+
+    # Saving simulation block diagram as PNG
     svg_data = diagram.GetGraphvizString(max_depth=2)
     graph = pydot.graph_from_dot_data(svg_data)[0]
-    graph.write_png("figures/block_diagram_01.png")
-    print("Block diagram saved as figures/block_diagram_01.png")'''
-
-# ------------------ Helper: diagnostics for why ../models may be untracked ------------------
-def git_models_diagnostics():
-    sim_dir = os.path.dirname(__file__)
-    candidate = os.path.normpath(os.path.join(sim_dir, "..", "models"))
-    print("Diagnostics for models folder:")
-    print("  Simulation script dir:", sim_dir)
-    print("  Candidate models path:", candidate)
-    print("  Exists?:", os.path.exists(candidate))
-    if os.path.exists(candidate):
-        print("  Is directory?:", os.path.isdir(candidate))
-        try:
-            files = os.listdir(candidate)
-            print("  Contains (sample up to 10):", files[:10])
-        except Exception as e:
-            print("  Error listing files:", str(e))
-    print("")
-    print("If the directory exists but is untracked, run from repo root:")
-    print("  git add models")
-    print("Or from Simulation/ if it's ../models:")
-    print("  git add ../models")
-    print("If it's empty, create a .gitkeep and add it.")
-    print("To see if files are ignored:")
-    print("  git check-ignore -v <path_to_file>")
-    print("To force-add an ignored file:")
-    print("  git add -f <path_to_file>")
+    graph.write_png("figures/block_diagram_sim.png")
+    print("Block diagram saved as figures/block_diagram_sim.png")
 
 # ------------------ Main ------------------
 if visualize:
